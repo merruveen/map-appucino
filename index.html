@@ -58,12 +58,21 @@
 
 			// When a click event occurs on a feature in the states layer, open a popup at the
     		// location of the click, with description HTML from its properties.
-    		map.on('click', 'all-ura-cps', function (e) {
-        		new mapboxgl.Popup()
-		            .setLngLat(e.lngLat)
+    		var popup = new mapboxgl.Popup({
+		        closeButton: false,
+		        closeOnClick: true
+		    });
+
+    		map.on('mouseenter', 'all-ura-cps', function (e) {
+		            popup.setLngLat(e.lngLat)
 		            .setHTML(e.features[0].properties.PP_CODE + ': ' + e.features[0].properties.NAME)
 		            .addTo(map);
     		});
+
+    		map.on('mouseleave', 'all-ura-cps', function() {
+		        map.getCanvas().style.cursor = '';
+		        popup.remove();
+		    });
 
 		    // Change the cursor to a pointer when the mouse is over the states layer.
 		    map.on('mouseenter', 'all-ura-cps', function () {
@@ -77,7 +86,8 @@
 
 
 			map.addControl(new MapboxGeocoder({
-    		accessToken: mapboxgl.accessToken
+    		accessToken: mapboxgl.accessToken,
+    		country: 'sg'
 			}));
 
 			</script>
