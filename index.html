@@ -1,44 +1,49 @@
-		    
+		  	<!DOCTYPE html>	  
 			<html>
 			<head>
 				<title>URA Car Park Map</title>
 				<script src='https://api.mapbox.com/mapbox-gl-js/v0.44.2/mapbox-gl.js'></script>
 				<link href='https://api.mapbox.com/mapbox-gl-js/v0.44.2/mapbox-gl.css' rel='stylesheet' />
 				<link rel="stylesheet" type="text/css" href="uramap.css">
+				<style>
+        			body { margin:0; padding:0; }
+        			#map { position:absolute; top:0; bottom:0; width:100%; }
+    			</style>
 			</head>
 			
 			<body>
 
 				<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.2.0/mapbox-gl-geocoder.min.js'></script>
 				<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.2.0/mapbox-gl-geocoder.css' type='text/css' />
+				
 				<div id='map'></div>
-					<div class='map-overlay' id='features'><h2>URA car parks</h2><div id='pd'><p>Loading...</p></div></div>
 					<div class='map-overlay' id='legend'></div>
 
 			<script>
 			mapboxgl.accessToken = 'pk.eyJ1IjoibWVycnV2ZWVuIiwiYSI6ImNqaWJ2YnI2MzFtYTMzcG5ibTc5eGN1bDMifQ.ngaxrHtoh714BH73TK1ZcA';
 
-				// Set max boundary to Singapore
 			var bounds = [
     			[103.575076, 1.211711], // Southwest 
     			[104.040622, 1.482174]  // Northeast 
 				];
 
 			var map = new mapboxgl.Map({
-  				container: 'map', // container id
-  				style: 'mapbox://styles/merruveen/cjibvtt4j06qh2sp6b8xh55v2',
+  				container: 'map',
+  				style: 'mapbox://styles/merruveen/cjiehygzz247m2sp8abzj3oyi',
   				maxBounds: bounds 
 			});
 
-			/*you don't need pants for the victory dance
-			cuz baboon's better than weasel  
-			(=ↀωↀ=)✧ */
-			//disable map rotate
+			/*
+			* you don't need pants for the victory dance
+			* cuz baboon's better than weasel  
+			* (=ↀωↀ=)✧ */
+
+			//disable rotate
 			map.dragRotate.disable();
 
 			map.on('load', function() {
   				var layers = ['Parking.sg', 'EPS'];
-				var colors = ['#5DEA0B', '#ED4112'];
+				var colors = ['#5afc9b', '#fe0bc5'];
 
 				for (i = 0; i < layers.length; i++) {
   				var layer = layers[i];
@@ -56,8 +61,7 @@
 				}
 			});
 
-			// When a click event occurs on a feature in the states layer, open a popup at the
-    		// location of the click, with description HTML from its properties.
+			//initiates popup with mouseover// 
     		var popup = new mapboxgl.Popup({
 		        closeButton: false,
 		        closeOnClick: true
@@ -69,26 +73,28 @@
 		            .addTo(map);
     		});
 
-    		map.on('mouseleave', 'all-ura-cps', function() {
-		        map.getCanvas().style.cursor = '';
-		        popup.remove();
-		    });
-
-		    // Change the cursor to a pointer when the mouse is over the states layer.
+		    // Change the cursor to a pointer when the mouse is over the states layer
 		    map.on('mouseenter', 'all-ura-cps', function () {
 		        map.getCanvas().style.cursor = 'pointer';
 		    });
 
-		    // Change it back to a pointer when it leaves.
+		    // to remove popup
 		    map.on('mouseleave', 'all-ura-cps', function () {
 		        map.getCanvas().style.cursor = '';
+		        popup.remove();
 		    });
 
-
-			map.addControl(new MapboxGeocoder({
+		    var geocoder = new MapboxGeocoder({
     		accessToken: mapboxgl.accessToken,
     		country: 'sg'
-			}));
+    		});
+			map.addControl(geocoder);
+
+			//geocoder bias script
+			map.on('load', updateGeocoderProximity); 
+			map.on('moveend', updateGeocoderProximity); 
+
+
 
 			</script>
 			</body>
